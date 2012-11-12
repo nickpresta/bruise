@@ -7,8 +7,8 @@ if [ ! -e $HOME/.pythonbrew/etc/bashrc ]; then
 fi
 
 function bruisemake() {
-    REPONAME=`basename $PWD`
-    BRANCHNAME=`git branch | grep "*" | cut -d " " -f 2-2`
+    REPONAME=`basename "$PWD"`
+    BRANCHNAME=`git rev-parse --abbrev-ref HEAD`
     envsuper="$REPONAME_$BRANCHNAME"
     pythonbrew venv create $envsuper
     pythonbrew venv use $envsuper
@@ -18,12 +18,13 @@ function bruisemake() {
 }
 
 function bruise() {
-    if [ ! -d ".git" ]; then
+    GITDIR=`git rev-parse --git-dir`
+    if [ ! -d "$GITDIR" ]; then
         return
     fi
 
-    REPONAME=`basename $PWD`
-    BRANCHNAME=`git branch | grep "*" | cut -d " " -f 2-2`
+    REPONAME=`basename "$PWD"`
+    BRANCHNAME=`git rev-parse --abbrev-ref HEAD`
     envbase=$REPONAME
     envsuper="$REPONAME_$BRANCHNAME"
     MYENV=""
@@ -63,7 +64,8 @@ function bruise() {
 
 cd() {
     builtin cd $@
-    if [ -d .git ]; then
+    GITDIR=`git rev-parse --git-dir`
+    if [ -d "$GITDIR` ]; then
         bruise
     fi
 }
